@@ -120,7 +120,7 @@ Route::group([
  ],   function ($router) {
  
      Route::post('store',[ CompanyController::class, 'store' ])->name('client.'); // Create Company
-     Route::put('update/{id}',[ CompanyController::class, 'update' ])->name('client.'); // Update Company
+     Route::post('update/{id}',[ CompanyController::class, 'update' ])->name('client.'); // Update Company
      Route::get('index',[ CompanyController::class, 'index' ])->name('client.'); // Lists Company
      Route::get('trashed',[ CompanyController::class, 'trashed' ])->name('client.'); // Trashed Company 
      Route::delete('destroy/{id}',[ CompanyController::class, 'destroy' ])->name('client.'); // Destroy Company 

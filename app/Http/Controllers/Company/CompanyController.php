@@ -109,7 +109,7 @@ class CompanyController extends Controller
     //update
     public function update(Request $request, $id) {
 
-        $company = new Company;
+        $company = Company::find($id);
         $company->description_agency = $request->description_agency;
         $company->address = $request->address;
         $company->email = $request->email;
@@ -124,15 +124,21 @@ class CompanyController extends Controller
         
         if( $hasFileLogo ) {
             $path = $request->file('logo')->store('public/clients');  
-            $company->photo = Storage::url($path);
+            $company->logo = Storage::url($path);
+        }else{
+            unset($request['logo']);
         }
         if( $hasFilePhotoCarousel ) {
             $path = $request->file('photo_carousel')->store('public/clients');  
-            $company->photo = Storage::url($path);
+            $company->photo_carousel = Storage::url($path);
+        }else{
+            unset($request['photo_carousel']);
         }
         if( $hasFilePhotoAgency ) {
             $path = $request->file('photo_agency')->store('public/clients');  
-            $company->photo = Storage::url($path);
+            $company->photo_agency = Storage::url($path);
+        }else{
+            unset($request['photo_agency']);
         }
         
         $company->save();
@@ -143,7 +149,7 @@ class CompanyController extends Controller
 
     // trashed
     public function trashed() {
-        $clients = Company::onlyTrashed()->get();
+        $clients = Company::onlyTrashed()->paginate(10);
         return CompanyResource::collection($clients);
     }
 
