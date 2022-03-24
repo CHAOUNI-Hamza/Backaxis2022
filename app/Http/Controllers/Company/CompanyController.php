@@ -24,11 +24,44 @@ class CompanyController extends Controller
     // index
     public function index(Request $request)
     {
+        if( $request->created_at ) {
+            $company = Company::Orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'created_at', $request->created_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->updated_at ) {
+            $company = Company::Orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'updated_at', $request->updated_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->date_from && $request->date_to ) {
+            $company = Company::Orderby( $request->sortby , $request->orderby )
+                            //->whereBetween('created_at', [$request->date_from, $request->date_to])
+                            ->where('created_at', '>=', $request->date_from)
+                        ->where('created_at', '<=', $request->date_to)
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        } elseif( $request->expand ) {
+            return new CompanyResource(Company::findOrFail($request->expand));
+        }
+        else {
+            $company = Company::Orderby( $request->sortby , $request->orderby )
+                            ->orWhere( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        /*$company = Company::Orderby( $request->sortby , $request->orderby )
+                            ->orWhere( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->orWhereDate( 'created_at', $request->created_at )
+                            ->orWhereDate( 'updated_at', $request->updated_at )
+                            ->orWhereDate('created_at', [$request->date_from, $request->date_to])
+                            ->paginate($request->paginate);*/
         //$Company = json_decode($request->filter);
         /*return $company->emaile;*/
         //return $company[1];
 
-        if( $request->created_at ) {
+       /* if( $request->created_at ) {
             $company = Company::Orderby( $request->sortby , $request->orderby )->whereDate( 'created_at', $request->created_at )->paginate($request->paginate);
         }
 
@@ -47,7 +80,7 @@ class CompanyController extends Controller
             $company = Company::Orderby( $request->sortby , $request->orderby )->where( $request->filter, 'LIKE', "%$request->filtervalue%" )->get();
         } else {
             $company = Company::Orderby( $request->sortby , $request->orderby )->paginate($request->paginate);
-        }
+        }*/
         
         
         
@@ -155,9 +188,15 @@ class CompanyController extends Controller
 
     // delete
     public function destroy($id) {
-        $company = Company::withTrashed()->where('id', $id);
+       /* $company = Company::withTrashed()->where('id', $id);
         $company->delete();
-        return 'delete';
+        return 'delete';*/
+
+        $single_user_id = explode(',' , $id);
+
+       foreach($single_user_id as $id) {
+           \App\User::findOrFail($id)->delete();
+       }
     }
 
     // restore
