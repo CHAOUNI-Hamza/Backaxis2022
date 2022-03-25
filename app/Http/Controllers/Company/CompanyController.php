@@ -188,15 +188,15 @@ class CompanyController extends Controller
 
     // delete
     public function destroy($id) {
-       /* $company = Company::withTrashed()->where('id', $id);
+       $company = Company::withTrashed()->where('id', $id);
         $company->delete();
-        return 'delete';*/
+        return 'delete';
 
-        $single_user_id = explode(',' , $id);
+        /*$single_user_id = explode(',' , $id);
 
        foreach($single_user_id as $id) {
            \App\User::findOrFail($id)->delete();
-       }
+       }*/
     }
 
     // restore
