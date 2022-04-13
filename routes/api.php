@@ -81,7 +81,7 @@ Route::group([
  ],   function ($router) {
  
      Route::post('store',[ ClientController::class, 'store' ])->name('client.'); // Create Client
-     Route::put('update/{id}',[ ClientController::class, 'update' ])->name('client.'); // Update Client
+     Route::post('update/{id}',[ ClientController::class, 'update' ])->name('client.'); // Update Client
      Route::get('index',[ ClientController::class, 'index' ])->name('client.'); // Lists Client
      Route::get('trashed',[ ClientController::class, 'trashed' ])->name('client.'); // Trashed Client 
      Route::delete('destroy/{id}',[ ClientController::class, 'destroy' ])->name('client.'); // Destroy Client 

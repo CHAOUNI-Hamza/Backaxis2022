@@ -181,9 +181,39 @@ class CompanyController extends Controller
     }
 
     // trashed
-    public function trashed() {
-        $clients = Company::onlyTrashed()->paginate(10);
-        return CompanyResource::collection($clients);
+    public function trashed(Request $request) {
+        $company = Company::onlyTrashed()->get();
+        /*if( $request->created_at ) {
+            $company = Company::withTrashed()
+            ->orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'created_at', $request->created_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->updated_at ) {
+            $company = Company::withTrashed()
+            ->orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'updated_at', $request->updated_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->date_from && $request->date_to ) {
+            $company = Company::withTrashed()
+            ->orderby( $request->sortby , $request->orderby )
+                            //->whereBetween('created_at', [$request->date_from, $request->date_to])
+                            ->where('created_at', '>=', $request->date_from)
+                        ->where('created_at', '<=', $request->date_to)
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        } elseif( $request->expand ) {
+            return new CompanyResource(Company::withTrashed()->findOrFail($request->expand));
+        }
+        else {
+            $company = Company::onlyTrashed()/*->orderby( $request->sortby , $request->orderby )
+                            ->orWhere( $request->filter, 'LIKE', "%$request->filtervalue%" )*/
+                            //->paginate($request->paginate);
+        //}
+        return CompanyResource::collection($company);
     }
 
     // delete

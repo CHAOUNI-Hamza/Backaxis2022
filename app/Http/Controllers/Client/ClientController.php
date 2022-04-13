@@ -24,11 +24,38 @@ class ClientController extends Controller
     // index
     public function index(Request $request)
     {
+        if( $request->created_at ) {
+            $client = Client::Orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'created_at', $request->created_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->updated_at ) {
+            $client = Client::Orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'updated_at', $request->updated_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->date_from && $request->date_to ) {
+            $client = Client::Orderby( $request->sortby , $request->orderby )
+                            //->whereBetween('created_at', [$request->date_from, $request->date_to])
+                            ->where('created_at', '>=', $request->date_from)
+                        ->where('created_at', '<=', $request->date_to)
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        } elseif( $request->expand ) {
+            return new ClientResource(Client::findOrFail($request->expand));
+        }
+        else {
+            $client = Client::Orderby( $request->sortby , $request->orderby )
+                            ->orWhere( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+                            
         //$client = json_decode($request->filter);
         /*return $client->emaile;*/
         //return $client[1];
 
-        if( $request->created_at ) {
+        /*if( $request->created_at ) {
             $client = Client::Orderby( $request->sortby , $request->orderby )->whereDate( 'created_at', $request->created_at )->paginate($request->paginate);
         }
 
@@ -46,7 +73,7 @@ class ClientController extends Controller
         elseif( $request->filter ) {
             $client = Client::Orderby( $request->sortby , $request->orderby )->where( $request->filter, 'LIKE', "%$request->filtervalue%" )->get();
         } else {
-            $client = Client::Orderby( $request->sortby , $request->orderby )->paginate($request->paginate);
+            $client = Client::Orderby( $request->sortby , $request->orderby )->paginate($request->paginate);*/
         }
         
         
@@ -86,17 +113,36 @@ class ClientController extends Controller
     public function update(Request $request, $id) {
 
         // validation
-        $validator = Validator::make($request->all(), [
+        /*$validator = Validator::make($request->all(), [
             'name' => 'required|min:5|max:20',
             'photo' => 'required|mimes:jpg,bmp,png',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 401);
-        }
+        }*/
         // end validation
 
-        $client = new Client;
+        $client = Client::find($id);
+        $client->name = $request->name;
+
+
+
+        $hasFileLogo = $request->hasFile('photo');
+        
+        if( $hasFileLogo ) {
+            $path = $request->file('logo')->store('public/clients');  
+            $client->logo = Storage::url($path);
+        }else{
+            unset($request['logo']);
+        }
+        
+        $client->save();
+
+        return 'update';
+        ////////////////////
+
+        /*$client = new Client;
         $client->name = $request->name;
         $hasFile = $request->hasFile('photo');
         
@@ -107,7 +153,7 @@ class ClientController extends Controller
         
         $client->save();
 
-        return 'update';
+        return 'update';*/
         
     }
 
