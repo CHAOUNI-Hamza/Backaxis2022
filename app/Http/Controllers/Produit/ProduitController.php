@@ -28,7 +28,7 @@ class ProduitController extends Controller
         /*return $produit->emaile;*/
         //return $produit[1];
 
-        if( $request->created_at ) {
+        /*if( $request->created_at ) {
             $produit = Produit::Orderby( $request->sortby , $request->orderby )->whereDate( 'created_at', $request->created_at )->paginate($request->paginate);
         }
 
@@ -47,6 +47,33 @@ class ProduitController extends Controller
             $produit = Produit::Orderby( $request->sortby , $request->orderby )->where( $request->filter, 'LIKE', "%$request->filtervalue%" )->get();
         } else {
             $produit = Produit::Orderby( $request->sortby , $request->orderby )->paginate($request->paginate);
+        }*/
+        if( $request->created_at ) {
+            $produit = Produit::Orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'created_at', $request->created_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->updated_at ) {
+            $produit = Produit::Orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'updated_at', $request->updated_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->date_from && $request->date_to ) {
+            $produit = Produit::Orderby( $request->sortby , $request->orderby )
+                            //->whereBetween('created_at', [$request->date_from, $request->date_to])
+                            ->where('created_at', '>=', $request->date_from)
+                        ->where('created_at', '<=', $request->date_to)
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        } elseif( $request->expand ) {
+            return new ProduitResource(Produit::findOrFail($request->expand));
+        }
+        else {
+            $produit = Produit::Orderby( $request->sortby , $request->orderby )
+                            ->orWhere( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
         }
         
         
@@ -95,7 +122,7 @@ class ProduitController extends Controller
     public function update(Request $request, $id)
     {
         // validation
-        $validator = Validator::make($request->all(), [
+       /* $validator = Validator::make($request->all(), [
             'title' => 'required',
             'description' => 'required',
             'social' => 'required',
@@ -122,6 +149,26 @@ class ProduitController extends Controller
             $produit->photo = Storage::url($path);
         }
 
+        
+        $produit->save();
+
+        return 'update';*/
+        $produit = Produit::find($id);
+        $produit->title = $request->title;
+        $produit->description = $request->description;
+        $produit->social = $request->social;
+        $produit->service = $request->service;
+
+
+
+        $hasFileLogo = $request->hasFile('photo');
+        
+        if( $hasFileLogo ) {
+            $path = $request->file('photo')->store('public/clients');  
+            $produit->photo = Storage::url($path);
+        }else{
+            unset($request['photo']);
+        }
         
         $produit->save();
 

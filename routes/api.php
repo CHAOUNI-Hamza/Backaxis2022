@@ -9,6 +9,7 @@ use App\Http\Controllers\Company\CompanyController;
 use App\Http\Controllers\Service\ServiceController;
 use App\Http\Controllers\Produit\ProduitController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Front\FrontController;
 
 /*
 |--------------------------------------------------------------------------
@@ -101,7 +102,7 @@ Route::group([
  ],   function ($router) {
  
      Route::post('store',[ ServiceController::class, 'store' ])->name('client.'); // Create Service
-     Route::put('update/{id}',[ ServiceController::class, 'update' ])->name('client.'); // Update Service
+     Route::post('update/{id}',[ ServiceController::class, 'update' ])->name('client.'); // Update Service
      Route::get('index',[ ServiceController::class, 'index' ])->name('client.'); // Lists Service
      Route::get('trashed',[ ServiceController::class, 'trashed' ])->name('client.'); // Trashed Service 
      Route::delete('destroy/{id}',[ ServiceController::class, 'destroy' ])->name('client.'); // Destroy Service 
@@ -140,12 +141,28 @@ Route::group([
  ],   function ($router) {
  
      Route::post('store',[ ProduitController::class, 'store' ])->name('client.'); // Create Produit
-     Route::put('update/{id}',[ ProduitController::class, 'update' ])->name('client.'); // Update Produit
+     Route::post('update/{id}',[ ProduitController::class, 'update' ])->name('client.'); // Update Produit
      Route::get('index',[ ProduitController::class, 'index' ])->name('client.'); // Lists Produit
      Route::get('trashed',[ ProduitController::class, 'trashed' ])->name('client.'); // Trashed Produit 
      Route::delete('destroy/{id}',[ ProduitController::class, 'destroy' ])->name('client.'); // Destroy Produit 
      Route::post('restore/{id}',[ ProduitController::class, 'restore' ])->name('client.'); // Restore Produit 
      Route::post('forced/{id}',[ ProduitController::class, 'forced' ])->name('client.'); // Forced Produit 
+ 
+ });
+ // End Routes Api < PRODUIT >
+
+ // Start Routes Api < Front >
+ Route::group([
+
+    //'middleware' => 'api',
+    'prefix' => 'v1/front',
+ 
+ ],   function ($router) {
+ 
+     Route::get('axis',[ FrontController::class, 'axis' ])->name('axis'); // get Axis
+     Route::get('clients',[ FrontController::class, 'clients' ])->name('clients'); // get Clients
+     Route::get('produits',[ FrontController::class, 'produits' ])->name('produits'); // get Produits
+     Route::get('services',[ FrontController::class, 'services' ])->name('services'); // get Services 
  
  });
  // End Routes Api < PRODUIT >

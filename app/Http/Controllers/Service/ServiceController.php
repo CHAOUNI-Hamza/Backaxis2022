@@ -28,7 +28,7 @@ class ServiceController extends Controller
         /*return $service->emaile;*/
         //return $service[1];
 
-        if( $request->created_at ) {
+        /*if( $request->created_at ) {
             $service = Service::Orderby( $request->sortby , $request->orderby )->whereDate( 'created_at', $request->created_at )->paginate($request->paginate);
         }
 
@@ -47,8 +47,34 @@ class ServiceController extends Controller
             $service = Service::Orderby( $request->sortby , $request->orderby )->where( $request->filter, 'LIKE', "%$request->filtervalue%" )->get();
         } else {
             $service = Service::Orderby( $request->sortby , $request->orderby )->paginate($request->paginate);
+        }*/
+        if( $request->created_at ) {
+            $service = Service::Orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'created_at', $request->created_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
         }
-        
+        elseif( $request->updated_at ) {
+            $service = Service::Orderby( $request->sortby , $request->orderby )
+                            ->whereDate( 'updated_at', $request->updated_at )
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
+        elseif( $request->date_from && $request->date_to ) {
+            $service = Service::Orderby( $request->sortby , $request->orderby )
+                            //->whereBetween('created_at', [$request->date_from, $request->date_to])
+                            ->where('created_at', '>=', $request->date_from)
+                        ->where('created_at', '<=', $request->date_to)
+                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        } elseif( $request->expand ) {
+            return new ServiceResource(Service::findOrFail($request->expand));
+        }
+        else {
+            $service = Service::Orderby( $request->sortby , $request->orderby )
+                            ->orWhere( $request->filter, 'LIKE', "%$request->filtervalue%" )
+                            ->paginate($request->paginate);
+        }
         
         
         return ServiceResource::collection($service);
@@ -88,18 +114,19 @@ class ServiceController extends Controller
     //update
     public function update(Request $request, $id)
     {
+        
         // validation
-        $validator = Validator::make($request->all(), [
+        /*$validator = Validator::make($request->all(), [
             'title' => 'required',
             'photo' => 'required|mimes:jpg,bmp,png',
         ]);
 
         if ($validator->fails()) {
             return response()->json(['error' => $validator->errors()], 401);
-        }
+        }*/
         // end validation
 
-        $service = new Service;
+        /*$service = new Service;
         $service->title = $request->title;
 
         
@@ -110,6 +137,23 @@ class ServiceController extends Controller
             $service->photo = Storage::url($path);
         }
 
+        
+        $service->save();
+
+        return 'update';*/
+        $service = Service::find($id);
+        $service->title = $request->title;
+
+
+
+        $hasFileLogo = $request->hasFile('photo');
+        
+        if( $hasFileLogo ) {
+            $path = $request->file('photo')->store('public/clients');  
+            $service->photo = Storage::url($path);
+        }else{
+            unset($request['photo']);
+        }
         
         $service->save();
 

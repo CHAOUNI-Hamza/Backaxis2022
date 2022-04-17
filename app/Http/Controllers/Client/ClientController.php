@@ -111,7 +111,6 @@ class ClientController extends Controller
 
     //update
     public function update(Request $request, $id) {
-
         // validation
         /*$validator = Validator::make($request->all(), [
             'name' => 'required|min:5|max:20',
@@ -131,10 +130,10 @@ class ClientController extends Controller
         $hasFileLogo = $request->hasFile('photo');
         
         if( $hasFileLogo ) {
-            $path = $request->file('logo')->store('public/clients');  
-            $client->logo = Storage::url($path);
+            $path = $request->file('photo')->store('public/clients');  
+            $client->photo = Storage::url($path);
         }else{
-            unset($request['logo']);
+            unset($request['photo']);
         }
         
         $client->save();
