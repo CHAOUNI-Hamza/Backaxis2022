@@ -24,6 +24,7 @@ class CreateCompaniesTable extends Migration
             $table->string('phone');
             $table->text('localisation');
             $table->string('social');
+            $table->string('slug');
             $table->softDeletes();
             $table->timestamps();
         });

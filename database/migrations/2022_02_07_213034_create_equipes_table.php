@@ -20,6 +20,7 @@ class CreateEquipesTable extends Migration
             $table->string('post');
             $table->string('description');
             $table->string('social');
+            $table->string('slug');
             $table->softDeletes();
             $table->timestamps();
         });

@@ -89,7 +89,7 @@ class ProduitController extends Controller
             'title' => 'required',
             'description' => 'required',
             'social' => 'required',
-            'service' => 'required',
+            'service_id' => 'required',
             'photo' => 'required|mimes:jpg,bmp,png',
         ]);
 
@@ -102,7 +102,7 @@ class ProduitController extends Controller
         $produit->title = $request->title;
         $produit->description = $request->description;
         $produit->social = $request->social;
-        $produit->service = $request->service;
+        $produit->service_id = $request->service_id;
 
 
         $hasFile = $request->hasFile('photo');
@@ -157,7 +157,7 @@ class ProduitController extends Controller
         $produit->title = $request->title;
         $produit->description = $request->description;
         $produit->social = $request->social;
-        $produit->service = $request->service;
+        $produit->service_id = $request->service_id;
 
 
 

@@ -23,7 +23,8 @@ class CreateAxesTable extends Migration
             $table->string('email');
             $table->string('phone');
             $table->string('localisation');
-            $table->string('social');
+            $table->text('social');
+            $table->string('slug');
             $table->softDeletes();
             $table->timestamps();
         });
