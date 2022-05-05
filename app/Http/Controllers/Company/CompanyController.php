@@ -24,67 +24,18 @@ class CompanyController extends Controller
     // index
     public function index(Request $request)
     {
-        if( $request->created_at ) {
-            $company = Company::Orderby( $request->sortby , $request->orderby )
-                            ->whereDate( 'created_at', $request->created_at )
-                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
-                            ->paginate($request->paginate);
-        }
-        elseif( $request->updated_at ) {
-            $company = Company::Orderby( $request->sortby , $request->orderby )
-                            ->whereDate( 'updated_at', $request->updated_at )
-                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
-                            ->paginate($request->paginate);
-        }
-        elseif( $request->date_from && $request->date_to ) {
-            $company = Company::Orderby( $request->sortby , $request->orderby )
-                            //->whereBetween('created_at', [$request->date_from, $request->date_to])
-                            ->where('created_at', '>=', $request->date_from)
-                        ->where('created_at', '<=', $request->date_to)
-                            ->where( $request->filter, 'LIKE', "%$request->filtervalue%" )
-                            ->paginate($request->paginate);
-        } elseif( $request->expand ) {
+        if( $request->expand ) {
             return new CompanyResource(Company::findOrFail($request->expand));
-        }
-        else {
-            $company = Company::Orderby( $request->sortby , $request->orderby )
-                            ->orWhere( $request->filter, 'LIKE', "%$request->filtervalue%" )
-                            ->paginate($request->paginate);
-        }
-        /*$company = Company::Orderby( $request->sortby , $request->orderby )
-                            ->orWhere( $request->filter, 'LIKE', "%$request->filtervalue%" )
-                            ->orWhereDate( 'created_at', $request->created_at )
-                            ->orWhereDate( 'updated_at', $request->updated_at )
-                            ->orWhereDate('created_at', [$request->date_from, $request->date_to])
-                            ->paginate($request->paginate);*/
-        //$Company = json_decode($request->filter);
-        /*return $company->emaile;*/
-        //return $company[1];
-
-       /* if( $request->created_at ) {
-            $company = Company::Orderby( $request->sortby , $request->orderby )->whereDate( 'created_at', $request->created_at )->paginate($request->paginate);
-        }
-
-        elseif( $request->updated_at ) {
-            $company = Company::Orderby( $request->sortby , $request->orderby )->whereDate( 'updated_at', $request->updated_at )->paginate($request->paginate);
-        }
-
-        elseif( $request->date_from && $request->date_to ) {
-            $company = Company::Orderby( $request->sortby , $request->orderby )->whereDate('created_at', [$request->date_from, $request->date_to])->paginate($request->paginate);
-        }
-
-        elseif( $request->expand ) {
-            return new CompanyResource(Company::findOrFail($request->expand));
-        }
-        elseif( $request->filter ) {
-            $company = Company::Orderby( $request->sortby , $request->orderby )->where( $request->filter, 'LIKE', "%$request->filtervalue%" )->get();
         } else {
-            $company = Company::Orderby( $request->sortby , $request->orderby )->paginate($request->paginate);
-        }*/
+            $company = Company::first();        
+            return new CompanyResource($company);
+        }
+
+
         
         
         
-        return CompanyResource::collection($company);
+        
     }
     
     // store
