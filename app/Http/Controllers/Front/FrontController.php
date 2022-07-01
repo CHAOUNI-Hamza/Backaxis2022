@@ -20,7 +20,7 @@ class FrontController extends Controller
         return new CompanyResource($axis);
     }
     public function clients() {
-        $clients = Client::all();
+        $clients = Client::limit(5)->get();
         return ClientResource::collection($clients);
     }
     public function produits() {
