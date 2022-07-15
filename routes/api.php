@@ -10,6 +10,7 @@ use App\Http\Controllers\Service\ServiceController;
 use App\Http\Controllers\Produit\ProduitController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Front\FrontController;
+use App\Http\Controllers\Sabonner\SabonnerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -165,4 +166,24 @@ Route::group([
      Route::get('services',[ FrontController::class, 'services' ])->name('services'); // get Services 
  
  });
- // End Routes Api < PRODUIT >
+ // End Routes Api < Front >
+
+
+  // Start Routes Api < Sabonner >
+  Route::group([
+
+    //'middleware' => 'api',
+    'prefix' => 'v1/sabonner',
+ 
+ ],   function ($router) {
+ 
+     Route::post('store',[ SabonnerController::class, 'store' ])->name('sabonner.'); // Create Produit
+     Route::post('update/{id}',[ SabonnerController::class, 'update' ])->name('sabonner.'); // Update Produit
+     Route::get('index',[ SabonnerController::class, 'index' ])->name('sabonner.'); // Lists Produit
+     Route::get('trashed',[ SabonnerController::class, 'trashed' ])->name('sabonner.'); // Trashed Produit 
+     Route::delete('destroy/{id}',[ SabonnerController::class, 'destroy' ])->name('sabonner.'); // Destroy Produit 
+     Route::post('restore/{id}',[ SabonnerController::class, 'restore' ])->name('sabonner.'); // Restore Produit 
+     Route::post('forced/{id}',[ SabonnerController::class, 'forced' ])->name('sabonner.'); // Forced Sabonner 
+ 
+ });
+ // End Routes Api < Sabonner >

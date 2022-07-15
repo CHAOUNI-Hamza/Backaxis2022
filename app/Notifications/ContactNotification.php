@@ -7,7 +7,10 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ContactNotification extends Notification
+use Illuminate\Notifications\Messages\BroadcastMessage;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+
+class ContactNotification extends Notification implements ShouldBroadcast
 {
     use Queueable;
     private $contact;
@@ -30,7 +33,7 @@ class ContactNotification extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail'];
+        return ['mail','database','broadcast'];
     }
 
     /**
@@ -58,5 +61,17 @@ class ContactNotification extends Notification
         return [
             'email' => $this->contact['email']
         ];
+    }
+
+    public function toBroadcast($notifiable){
+        $notification = [
+            "data" => [
+                'email' => $this->contact['email']
+            ]
+        ];
+
+        return new BroadcastMessage([
+            'notification' => $notification
+        ]);
     }
 }
